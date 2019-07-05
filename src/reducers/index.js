@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import produce from 'immer';
 
 const initialBookList = [
   {
@@ -18,10 +19,10 @@ const initialBookList = [
   },
 ];
 
-const bookReducer = (state = initialBookList, action) => {
+const bookReducer = produce((draft, action) => {
   switch (action.type) {
     case 'DELETE_BOOK':
-      return state.filter(book => {
+      return draft.filter(book => {
         return book.id !== action.payload;
       });
     case 'CREATE_BOOK':
@@ -29,16 +30,18 @@ const bookReducer = (state = initialBookList, action) => {
         id: Math.floor(Math.random() * 9999999999999),
         ...action.payload,
       };
-      return [...state, newBook];
+      draft.push(newBook);
+      break;
     case 'UPDATE_BOOK':
-      const targetIndex = state.findIndex(book => {
+      const targetIndex = draft.findIndex(book => {
         return book.id === action.payload.id;
       });
-      state[targetIndex] = { ...action.payload };
-      return [...state];
+      draft[targetIndex] = { ...action.payload };
+      break;
     default:
-      return state;
+      return draft;
   }
-};
+}, initialBookList);
+// NOTE: this pattern of providing a function as first argument returns a curried function that is waiting for the base-state (i.e. initialBookList) see https://github.com/immerjs/immer#currying
 
 export default combineReducers({ books: bookReducer });
