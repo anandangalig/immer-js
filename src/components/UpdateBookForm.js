@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { updateBook } from '../actions';
+import produce from 'immer';
 
 class UpdateBookForm extends React.Component {
   state = {
@@ -18,6 +19,15 @@ class UpdateBookForm extends React.Component {
     this.props.setEditing(false);
   };
 
+  updateState = event => {
+    this.setState(
+      // returns produced result: take base -> copy to proxy/draft -> make changes on proxy and return it
+      produce(this.state, draftState => {
+        draftState[event.target.id] = event.target.value;
+      }),
+    );
+  };
+
   render() {
     return (
       <form
@@ -27,23 +37,19 @@ class UpdateBookForm extends React.Component {
           this.handleSubmit();
         }}
       >
-        <label htmlFor="book_name">Book Name</label>
+        <label htmlFor="updateBookName">Book Name</label>
         <input
           type="text"
-          id="book_name"
+          id="updateBookName"
           value={this.state.updateBookName}
-          onChange={event => {
-            this.setState({ updateBookName: event.target.value });
-          }}
+          onChange={this.updateState}
         />
-        <label htmlFor="book_author">Book Author</label>
+        <label htmlFor="updateBookAuthor">Book Author</label>
         <input
           type="text"
-          id="book_author"
+          id="updateBookAuthor"
           value={this.state.updateBookAuthor}
-          onChange={event => {
-            this.setState({ updateBookAuthor: event.target.value });
-          }}
+          onChange={this.updateState}
         />
         <button type="submit">Save</button>
       </form>
