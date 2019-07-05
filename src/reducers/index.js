@@ -14,7 +14,7 @@ const initialBookList = [
   {
     id: 3,
     name: 'The Master and Margarita',
-    author: 'Mikhail Bolgakov',
+    author: 'Mikhail Bulgakov',
   },
 ];
 
